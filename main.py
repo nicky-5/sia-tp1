@@ -1,52 +1,35 @@
-from src.sokoban import Direction
-from src.functions import read_file_to_matrix, game_from_matrix, print_game
-from src.search import Game, Search, DFS_method, BFS_method, HeuristicMethod, Heuristic_1, Heuristic_2
+from src.functions import clear, read_file_to_matrix, game_from_matrix, print_game
+from src.methods import MethodDFS, MethodBFS, MethodHeuristic
+from src.heuristics import min_manhattan_modified
+from src.search import search
 import time
 import os
 
 if __name__ == "__main__":
-
-    # print_game(board, state)
-    # print(targets)
-
-    # list = []
-    # for direction in Direction:
-    #     list.append(state.copy_move(board, direction))
-
-    # for e in list:
-    #     if e is not None:
-    #         print_game(board, e)
-
     # Example usage:
     file_name = 'test/test_6'  # Replace 'your_file.txt' with the path to your file
     matrix = read_file_to_matrix(file_name)
     [board, targets, state] = game_from_matrix(matrix)
+    print_game(board, state)
 
-    game = Game(board, targets)
+    heuristic = MethodHeuristic(state, board, targets, min_manhattan_modified)
+    bfs = MethodBFS(state)
+    dfs = MethodDFS(state)
 
-    heuristic = HeuristicMethod(Heuristic_2(targets))
-    bfs_method = BFS_method()
+    start = time.time()
+    solution = search(heuristic, board, targets)
+    end = time.time()
 
-    # searcher = Search(initial_state=state, game=game, method=bfs_method)
-    searcher = Search(initial_state=state, game=game, method=heuristic)
-    solution = searcher.search()
-    # bfs = BFS(initial_state=state, game=game)
-    # solution = dfs.search()
-
-    print(solution)
-    if solution:
-        print("Solution found:", solution)
-    else:
+    if solution is None:
         print("No solution found.")
+        exit()
 
-    print(solution.history)
+    clear()
+    print("Solution found! Replaying in 3 seconds...")
+    time.sleep(3)
 
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-    cur_state = state
-    print_game(board, cur_state)
-    for d in solution.history:
-        time.sleep(0.01)
-        os.system('cls' if os.name == 'nt' else 'clear')
-        cur_state = cur_state.copy_move(board, d)
-        print_game(board, cur_state)
+    for state in solution.history():
+        clear()
+        print("Solved in {:.2f} seconds".format(end - start))
+        print_game(board, state)
+        time.sleep(0.2)

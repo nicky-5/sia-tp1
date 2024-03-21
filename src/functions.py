@@ -1,4 +1,6 @@
-from src.sokoban import Symbol, Tile, State, Matrix, Board
+import os
+
+from src.sokoban import Symbol, Tile, State, Matrix, Board, Position
 
 
 def read_file_to_matrix(file_name: str) -> Matrix:
@@ -16,7 +18,7 @@ def match_symbol(symbol: Symbol) -> Tile:
             return Tile.TARGET
 
 
-def game_from_matrix(matrix: Matrix) -> tuple[Board, State]:
+def game_from_matrix(matrix: Matrix) -> tuple[Board, set[Position], State]:
     board = [list(map(match_symbol, row)) for row in matrix]
 
     boxes = set()
@@ -59,3 +61,9 @@ def print_game(board: Board, state: State):
         # Join the characters in the row into a single string
         row_str = ''.join(row)
         print(row_str)
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def manhattan(pos1: Position, pos2: Position) -> int:
+    return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
