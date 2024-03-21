@@ -37,11 +37,12 @@ def next_position(position: Position, direction: Direction) -> Position:
     y = position[1] + direction.value[1]
     return (x, y)
 
+
 def all_directions(position: Position) -> tuple[Position]:
-    top     = next_position(position, Direction.UP)
-    bottom  = next_position(position, Direction.DOWN)
-    left    = next_position(position, Direction.LEFT)
-    right   = next_position(position, Direction.RIGHT)
+    top = next_position(position, Direction.UP)
+    bottom = next_position(position, Direction.DOWN)
+    left = next_position(position, Direction.LEFT)
+    right = next_position(position, Direction.RIGHT)
     return (top, bottom, left, right)
 
 
@@ -50,13 +51,17 @@ class State:
         self.boxes = frozenset(boxes)
         self.player = player
         self.past = past
+        if past is None:
+            self.cost = 0
+        else:
+            self.cost = past.cost + 1
 
     def __hash__(self) -> int:
         return hash((self.boxes, self.player))
 
     def __eq__(self, other: State) -> bool:
         return other != None and self.boxes == other.boxes and self.player == other.player
-    
+
     def __lt__(self, _: State) -> bool:
         return False
 
@@ -87,7 +92,7 @@ class State:
             boxes.add(box)
 
         return State(boxes, player, self)
-    
+
     def history(self) -> list[State]:
         hist = deque([self])
         state = self
@@ -96,8 +101,7 @@ class State:
             state = state.past
 
         return list(hist)
-        
-    
+
     def is_deadlock(self, board: Board, targets: set[Position]) -> bool:
         for box in self.boxes:
             if box in targets:
@@ -105,20 +109,22 @@ class State:
 
             (top, bottom, left, right) = all_directions(box)
 
-            occupied = lambda pos : board[pos[1]][pos[0]] == Tile.WALL
+            def occupied(pos): return board[pos[1]][pos[0]] == Tile.WALL
             if (occupied(top) or occupied(bottom)) and (occupied(left) or occupied(right)):
                 return True
-            
-            occupied_box = lambda pos : occupied(pos) or pos in self.boxes
-            if (occupied_box(top) or occupied_box(bottom)) and (occupied_box(left) or occupied_box(right)):
-                other_box = [pos for pos in [top, bottom, left, right] if pos in self.boxes][0]
 
-                (other_top, other_bottom, other_left, other_right) = all_directions(other_box)
+            def occupied_box(pos): return occupied(pos) or pos in self.boxes
+            if (occupied_box(top) or occupied_box(bottom)) and (occupied_box(left) or occupied_box(right)):
+                other_box = [pos for pos in [top, bottom,
+                                             left, right] if pos in self.boxes][0]
+
+                (other_top, other_bottom, other_left,
+                 other_right) = all_directions(other_box)
 
                 if (occupied_box(other_top) or occupied_box(other_bottom)) and (occupied_box(other_left) or occupied_box(other_right)):
                     return True
 
         return False
-    
+
     def is_goal(self, targets: set[Position]) -> bool:
         return self.boxes.issubset(targets)

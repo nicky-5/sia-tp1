@@ -6,6 +6,7 @@ from heapq import heappop, heappush
 from src.heuristics import Heuristic
 from src.sokoban import Board, Position, State
 
+
 class Method(ABC):
     @abstractmethod
     def get(self) -> State:
@@ -18,6 +19,11 @@ class Method(ABC):
     @abstractmethod
     def is_empty(self) -> bool:
         pass
+
+    @abstractmethod
+    def check_if_explored(self, explored, state: State) -> bool:
+        pass
+
 
 class MethodDFS(Method):
     def __init__(self, initial_state: State):
@@ -32,6 +38,9 @@ class MethodDFS(Method):
     def is_empty(self) -> bool:
         return len(self.frontier) == 0
 
+    def check_if_explored(self, explored, state: State) -> bool:
+        return state in explored
+
 
 class MethodBFS(Method):
     def __init__(self, initial_state: State):
@@ -45,6 +54,9 @@ class MethodBFS(Method):
 
     def is_empty(self) -> bool:
         return len(self.frontier) == 0
+
+    def check_if_explored(self, explored, state: State) -> bool:
+        return state in explored
 
 
 class MethodHeuristic(Method):
@@ -63,3 +75,27 @@ class MethodHeuristic(Method):
 
     def is_empty(self) -> bool:
         return len(self.frontier) == 0
+
+    def check_if_explored(self, explored, state: State) -> bool:
+        return state in explored
+
+
+class MethodAStar(Method):
+    def __init__(self, initial_state: State, board: Board, targets: set[Position], heuristic: Heuristic):
+        self.board = board
+        self.targets = targets
+        self.heuristic = heuristic
+        self.frontier = [(int(0), initial_state)]
+
+    def get(self) -> State:
+        return heappop(self.frontier)[1]
+
+    def add(self, state: State):
+        value = self.heuristic(self.board, self.targets, state) + state.cost
+        heappush(self.frontier, (value, state))
+
+    def is_empty(self) -> bool:
+        return len(self.frontier) == 0
+
+    def check_if_explored(self, explored, state: State) -> bool:
+        return False

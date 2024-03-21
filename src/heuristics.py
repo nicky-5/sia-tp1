@@ -4,16 +4,18 @@ from src.sokoban import Board, Position, State
 from src.functions import manhattan
 
 Heuristic = Callable[[Board, set[Position], State], int]
-    
-def min_manhattan(_:Board, targets: set[Position], state: State) -> int:
+
+
+def min_manhattan(_: Board, targets: set[Position], state: State) -> int:
     sum = 0
     for box in state.boxes:
         distances = [manhattan(box, target) for target in targets]
         sum += min(distances)
 
     return sum
-    
-def min_manhattan_modified(_:Board, targets: set[Position], state: State) -> int:
+
+
+def min_manhattan_modified(_: Board, targets: set[Position], state: State) -> int:
     sum = 0
     from_player = []
     for box in state.boxes:
