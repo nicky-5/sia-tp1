@@ -115,8 +115,7 @@ class State:
 
             def occupied_box(pos): return occupied(pos) or pos in self.boxes
             if (occupied_box(top) or occupied_box(bottom)) and (occupied_box(left) or occupied_box(right)):
-                other_box = [pos for pos in [top, bottom,
-                                             left, right] if pos in self.boxes][0]
+                other_box = [pos for pos in [top, bottom, left, right] if pos in self.boxes][0]
 
                 (other_top, other_bottom, other_left,
                  other_right) = all_directions(other_box)

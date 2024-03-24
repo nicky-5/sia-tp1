@@ -60,9 +60,7 @@ class MethodBFS(Method):
 
 
 class MethodHeuristic(Method):
-    def __init__(self, initial_state: State, board: Board, targets: set[Position], heuristic: Heuristic):
-        self.board = board
-        self.targets = targets
+    def __init__(self, initial_state: State, heuristic: Heuristic):
         self.heuristic = heuristic
         self.frontier = [(int(0), initial_state)]
 
@@ -70,7 +68,7 @@ class MethodHeuristic(Method):
         return heappop(self.frontier)[1]
 
     def add(self, state: State):
-        value = self.heuristic(self.board, self.targets, state)
+        value = self.heuristic(state)
         heappush(self.frontier, (value, state))
 
     def is_empty(self) -> bool:
@@ -81,9 +79,7 @@ class MethodHeuristic(Method):
 
 
 class MethodAStar(Method):
-    def __init__(self, initial_state: State, board: Board, targets: set[Position], heuristic: Heuristic):
-        self.board = board
-        self.targets = targets
+    def __init__(self, initial_state: State, heuristic: Heuristic):
         self.heuristic = heuristic
         self.frontier = [(int(0), initial_state)]
 
@@ -91,7 +87,7 @@ class MethodAStar(Method):
         return heappop(self.frontier)[1]
 
     def add(self, state: State):
-        value = self.heuristic(self.board, self.targets, state) + state.cost
+        value = self.heuristic(state) + state.cost
         heappush(self.frontier, (value, state))
 
     def is_empty(self) -> bool:
