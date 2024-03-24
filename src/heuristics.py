@@ -42,7 +42,7 @@ def fast_anti_livelock(heuristic: Heuristic, board: Board) -> Heuristic:
     for x in range(1, width - 1):
         for y in range(1, height - 1):
             (top, bottom, left, right) = all_directions((x, y))
-            if (blocked(top) or blocked(bottom)) and (blocked(left) or blocked(right)):
+            if (blocked(top) or blocked(bottom)) and (blocked(left) or blocked(right)) and board[y][x] != Tile.TARGET:
                 livelock[x][y] = True
 
     for x in range(1, width - 1):
@@ -54,7 +54,7 @@ def fast_anti_livelock(heuristic: Heuristic, board: Board) -> Heuristic:
         last = max(ys)
         between = range(first + 1, last)
 
-        col_blocked = lambda y : blocked((x - 1, y)) or blocked((x + 1, y))
+        col_blocked = lambda y : (blocked((x - 1, y)) or blocked((x + 1, y))) and board[y][x] != Tile.TARGET
         col_lock = [col_blocked(y) for y in between]
         if all(col_lock):
             for y in between:
@@ -69,7 +69,7 @@ def fast_anti_livelock(heuristic: Heuristic, board: Board) -> Heuristic:
         last = max(xs)
         between = range(first + 1, last)
 
-        row_blocked = lambda x : blocked((x, y - 1)) or blocked((x, y + 1))
+        row_blocked = lambda x : (blocked((x, y - 1)) or blocked((x, y + 1))) and board[y][x] != Tile.TARGET
         row_lock = [row_blocked(x) for x in between]
         if all(row_lock):
             for x in between:
