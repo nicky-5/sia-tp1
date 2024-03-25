@@ -7,7 +7,7 @@ import os
 
 if __name__ == "__main__":
     # Example usage:
-    file_name = 'test/test_7'  # Replace 'your_file.txt' with the path to your file
+    file_name = 'test/test_1'  # Replace 'your_file.txt' with the path to your file
     matrix = read_file_to_matrix(file_name)
     [board, targets, state] = game_from_matrix(matrix)
     print_game(board, state)
@@ -22,8 +22,8 @@ if __name__ == "__main__":
     dfs = MethodDFS(state)
 
     start = time.time()
-    # solution, explored, frontier = search(method_heuristic, board, targets)
-    solution, explored, frontier = a_star_search(method_heuristic, board, targets)
+    solution, explored, frontier = search(method_heuristic, board, targets)
+    #solution, explored, frontier = a_star_search(method_heuristic, board, targets)
     end = time.time()
 
     if solution is None:

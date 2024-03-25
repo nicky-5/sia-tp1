@@ -22,39 +22,101 @@ methods = [MethodBFS, MethodDFS]
 columns = ['solved', 'mean_time', 'time_error', 'cost', 'expanded', 'frontier', 'solution']
 dataframes = {}
 
-for test in tests:
-    print(test)
-    dataframes[test] = pd.DataFrame(0.0, index=method_names, columns=columns)
-    matrix = read_file_to_matrix(test)
-    [board, targets, state] = game_from_matrix(matrix)
+def test_not_informed():
+    print("Running not informed...")
+    for test in tests:
+        print(test)
+        dataframes[test] = pd.DataFrame(0.0, index=method_names, columns=columns)
+        matrix = read_file_to_matrix(test)
+        [board, targets, state] = game_from_matrix(matrix)
 
-    for method, method_name in zip(methods, method_names):
-        m = method(state)
+        for method, method_name in zip(methods, method_names):
+            durations = []
+            solution = None
+            explored = None
+            frontier = None
+            iterations = 100
+            for i in range(1, iterations):
+                m = method(state)
+                start = time.time()
+                solution, explored, frontier = search(m, board, targets)
+                end = time.time()
+                duration = end - start
+                durations.append(duration)
+            dataframes[test].at[method_name, 'mean_time'] = np.mean(durations)
+            dataframes[test].at[method_name, 'time_error'] = np.std(durations) / iterations**0.5
+            if solution is not None:
+                dataframes[test].at[method_name, 'solved'] = True
+                dataframes[test].at[method_name, 'cost'] = solution.cost
+            else:
+                dataframes[test].at[method_name, 'solved'] = False
+                dataframes[test].at[method_name, 'cost'] = 0
+
+            dataframes[test].at[method_name, 'expanded'] = len(explored)
+            dataframes[test].at[method_name, 'frontier'] = len(frontier)
+    print(dataframes)
+
+def test_informed():
+    print("Running informed...")
+    method_names = ['Greedy', 'A star']
+    
+    for test in tests:
+        print(test)
+        dataframes[test] = pd.DataFrame(0.0, index=method_names, columns=columns)
+        matrix = read_file_to_matrix(test)
+        [board, targets, state] = game_from_matrix(matrix)
+        
+
+        
+        method_dfs = MethodDFS(state)
         durations = []
         solution = None
         explored = None
         frontier = None
-        iterations = 100
+        iterations = 10
         for i in range(1, iterations):
+            method_heuristic = MethodHeuristic(
+                state, fast_anti_livelock(walkable_distance(board, targets, state), board))
             start = time.time()
-            solution, explored, frontier = search(m, board, targets)
+            [solution, explored, frontier] = search(method_heuristic, board, targets)
             end = time.time()
             duration = end - start
             durations.append(duration)
-        dataframes[test].at[method_name, 'mean_time'] = np.mean(durations)
-        dataframes[test].at[method_name, 'time_error'] = np.std(durations) / iterations**0.5
+        dataframes[test].at[method_names[0], 'mean_time'] = np.mean(durations)
+        dataframes[test].at[method_names[0], 'time_error'] = np.std(durations) / iterations**0.5
         if solution is not None:
-            dataframes[test].at[method_name, 'solved'] = True
-            dataframes[test].at[method_name, 'cost'] = solution.cost
+            dataframes[test].at[method_names[0], 'solved'] = True
+            dataframes[test].at[method_names[0], 'cost'] = solution.cost
         else:
-            dataframes[test].at[method_name, 'solved'] = False
-            dataframes[test].at[method_name, 'cost'] = 0
+            dataframes[test].at[method_names[0], 'solved'] = False
+            dataframes[test].at[method_names[0], 'cost'] = 0
 
-        dataframes[test].at[method_name, 'expanded'] = len(explored)
-        dataframes[test].at[method_name, 'frontier'] = len(frontier)
+        dataframes[test].at[method_names[0], 'expanded'] = len(explored)
+        dataframes[test].at[method_names[0], 'frontier'] = len(frontier)
+            
+        for i in range(1, iterations):
+            method_astar = MethodAStar(state, fast_anti_livelock(walkable_distance(board, targets, state),board))
+            start = time.time()
+            [solution, explored, frontier] = a_star_search(method_astar, board, targets)
+            end = time.time()
+            duration = end - start
+            durations.append(duration)
+        dataframes[test].at[method_names[1], 'mean_time'] = np.mean(durations)
+        dataframes[test].at[method_names[1], 'time_error'] = np.std(durations) / iterations**0.5
+        if solution is not None:
+            dataframes[test].at[method_names[1], 'solved'] = True
+            dataframes[test].at[method_names[1], 'cost'] = solution.cost
+        else:
+            dataframes[test].at[method_names[1], 'solved'] = False
+            dataframes[test].at[method_names[1], 'cost'] = 0
 
-print(dataframes)
+        dataframes[test].at[method_names[1], 'expanded'] = len(explored)
+        dataframes[test].at[method_names[1], 'frontier'] = len(frontier)
 
+    print(dataframes)
+
+#test_not_informed()
+test_informed()
 
 """
 {'test/test_1':     solved  mean_time  time_error    cost  expanded  frontier  solution

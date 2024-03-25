@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 import time
-from typing import Optional, Set
+from typing import Optional, Set, Tuple
 
 from src.methods import Method
 from src.functions import clear, print_game
@@ -17,7 +17,7 @@ def successors(board: Board, targets: set[Position], state: State) -> list[State
     return result
 
 
-def search(method: Method, board: Board, targets: set[Position]) -> Tuple[Optional[State], Set, []]:
+def search(method: Method, board: Board, targets: set[Position]) -> tuple[Optional[State], Set, []]:
     explored = set()
     last = time.time()
 
@@ -25,11 +25,11 @@ def search(method: Method, board: Board, targets: set[Position]) -> Tuple[Option
         state = method.get()
 
         curr = time.time()
-        if curr - last > 0.1:
-            clear()
-            print("Searching solution...")
-            print_game(board, state)
-            last = curr
+        #if curr - last > 0.1:
+        #    clear()
+        #    print("Searching solution...")
+        #    print_game(board, state)
+        #    last = curr
 
         if state.is_goal(targets):
             return state, explored, method.return_frontier()
@@ -44,19 +44,19 @@ def search(method: Method, board: Board, targets: set[Position]) -> Tuple[Option
     return None, explored, method.return_frontier()
 
 
-def a_star_search(method: Method, board: Board, targets: set[Position]) -> Optional[State]:
+def a_star_search(method: Method, board: Board, targets: set[Position]) -> tuple[Optional[State], Set, []]:
     explored = {}
-    last = time.time()
+    #last = time.time()
 
     while not method.is_empty():
         state = method.get()
 
-        curr = time.time()
-        if curr - last > 0.1:
-            clear()
-            print("Searching solution...")
-            print_game(board, state)
-            last = curr
+        #curr = time.time()
+        #if curr - last > 0.1:
+        #    clear()
+        #    print("Searching solution...")
+        #    print_game(board, state)
+        #    last = curr
 
         if state.is_goal(targets):
             return state, explored.values(), method.return_frontier()
