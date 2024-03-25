@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import time
 import os
+import matplotlib.pyplot as plt
 
 
 tests = [
@@ -19,7 +20,8 @@ method_names = ['bfs', 'dfs']
 methods = [MethodBFS, MethodDFS]
 
 
-columns = ['solved', 'mean_time', 'time_error', 'cost', 'expanded', 'frontier', 'solution']
+columns = ['solved', 'mean_time', 'time_error',
+           'cost', 'expanded', 'frontier', 'solution']
 dataframes = {}
 
 for test in tests:
@@ -29,20 +31,21 @@ for test in tests:
     [board, targets, state] = game_from_matrix(matrix)
 
     for method, method_name in zip(methods, method_names):
-        m = method(state)
         durations = []
         solution = None
         explored = None
         frontier = None
-        iterations = 100
+        iterations = 10
         for i in range(1, iterations):
+            m = method(state)
             start = time.time()
             solution, explored, frontier = search(m, board, targets)
             end = time.time()
             duration = end - start
             durations.append(duration)
         dataframes[test].at[method_name, 'mean_time'] = np.mean(durations)
-        dataframes[test].at[method_name, 'time_error'] = np.std(durations) / iterations**0.5
+        dataframes[test].at[method_name, 'time_error'] = np.std(
+            durations) / iterations**0.5
         if solution is not None:
             dataframes[test].at[method_name, 'solved'] = True
             dataframes[test].at[method_name, 'cost'] = solution.cost
@@ -55,18 +58,34 @@ for test in tests:
 
 print(dataframes)
 
+tiempos_bfs = [dataframes[test].at['bfs', 'mean_time'] for test in tests]
+errores_bfs = [dataframes[test].at['bfs', 'time_error'] for test in tests]
+tiempos_dfs = [dataframes[test].at['dfs', 'mean_time'] for test in tests]
+errores_dfs = [dataframes[test].at['dfs', 'time_error'] for test in tests]
 
-"""
-{'test/test_1':     solved  mean_time  time_error    cost  expanded  frontier  solution
-bfs   True   0.017649     0.00460   470.0     553.0     177.0       0.0
-dfs   True   0.012046     0.00235  1760.0     124.0    4608.0       0.0, 'test/test_4':
-    solved  mean_time  time_error    cost  expanded  frontier  solution
-bfs   True   1.705568    0.064060  1172.0   41245.0     876.0       0.0
-dfs   True   0.022788    0.010665  1132.0     278.0    2605.0       0.0, 'test/test_5':
-    solved  mean_time  time_error   cost  expanded  frontier  solution
-bfs   True   0.384150    0.021139  317.0   10203.0    6413.0       0.0
-dfs   True   0.016104    0.005860  357.0     100.0     475.0       0.0, 'test/test_6':
-   solved  mean_time  time_error   cost  expanded  frontier  solution
-bfs   True   0.811480    0.146367  208.0    4597.0  155487.0       0.0
-dfs   True   4.755564    0.496355  788.0     104.0    1524.0       0.0}
-"""
+plt.rcParams['figure.dpi'] = 300
+
+# Configuración del gráfico
+x = range(len(tests))
+ancho_barra = 0.35
+
+# Crear gráfico de barras
+fig, ax = plt.subplots()
+barra_bfs = ax.bar(x, tiempos_bfs, ancho_barra,
+                   yerr=errores_bfs, capsize=5, label='BFS', color='blue')
+barra_dfs = ax.bar([i + ancho_barra for i in x], tiempos_dfs, ancho_barra,
+                   yerr=errores_dfs, capsize=5, label='DFS', color='orange')
+
+# Etiquetas y título
+ax.set_xlabel('Pruebas')
+ax.set_ylabel('Tiempo Medio de Ejecución')
+ax.set_title(
+    'Comparación de Tiempo Medio de Ejecución entre BFS y DFS por Prueba')
+ax.set_xticks([i + ancho_barra / 2 for i in x])
+ax.set_xticklabels(tests)
+ax.legend()
+
+# Mostrar gráfico
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
