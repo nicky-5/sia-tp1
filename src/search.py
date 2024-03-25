@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 import time
-from typing import Optional
+from typing import Optional, Set
 
 from src.methods import Method
 from src.functions import clear, print_game
@@ -17,7 +17,7 @@ def successors(board: Board, targets: set[Position], state: State) -> list[State
     return result
 
 
-def search(method: Method, board: Board, targets: set[Position]) -> Optional[State]:
+def search(method: Method, board: Board, targets: set[Position]) -> Tuple[Optional[State], Set, []]:
     explored = set()
     last = time.time()
 
@@ -32,7 +32,7 @@ def search(method: Method, board: Board, targets: set[Position]) -> Optional[Sta
             last = curr
 
         if state.is_goal(targets):
-            return state
+            return state, explored, method.return_frontier()
 
         if state not in explored:  # and not state.is_deadlock(board, targets):
             explored.add(state)
@@ -41,7 +41,7 @@ def search(method: Method, board: Board, targets: set[Position]) -> Optional[Sta
                 if successor not in explored:
                     method.add(successor)
 
-    return None
+    return None, explored, method.return_frontier()
 
 
 def a_star_search(method: Method, board: Board, targets: set[Position]) -> Optional[State]:
@@ -59,7 +59,7 @@ def a_star_search(method: Method, board: Board, targets: set[Position]) -> Optio
             last = curr
 
         if state.is_goal(targets):
-            return state
+            return state, explored.values(), method.return_frontier()
 
         # and not state.is_deadlock(board, targets):
         if state.__hash__() not in explored.keys() or explored[state.__hash__()].cost > state.cost:
@@ -69,4 +69,4 @@ def a_star_search(method: Method, board: Board, targets: set[Position]) -> Optio
                 if successor.__hash__() not in explored.keys() or explored[successor.__hash__()].cost > successor.cost:
                     method.add(successor)
 
-    return None
+    return None, explored.values(), method.return_frontier()

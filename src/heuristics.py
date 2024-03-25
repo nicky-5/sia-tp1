@@ -36,6 +36,7 @@ def min_manhattan_modified(targets: set[Position]) -> Heuristic:
 def fast_anti_livelock(heuristic: Heuristic, board: Board) -> Heuristic:
     height = len(board)
     width = len(board[0])
+    # width = max(len(row) for row in matrix)
     livelock = np.full(shape=(width, height), fill_value=False, dtype=bool)
     def blocked(pos): return board[pos[1]][pos[0]] == Tile.WALL
 
@@ -200,4 +201,28 @@ def manhattan_mod(_: Board, targets: set[Position], state: State) -> Heuristic:
             sum_distance_boxes_goals += distance_box_closest_goal
 
         return distance_player_closet_box + sum_distance_boxes_goals
+    return f
+
+
+def anti_wall(_: Board, targets: set[Position], state: State) -> Heuristic:
+    def f(state: State) -> int:
+        sum = 0
+        for box in state.boxes:
+            if box not in targets:
+                (top, bottom, left, right) = all_directions(box)
+
+                def occupied(pos): return _[pos[1]][pos[0]] == Tile.WALL
+                if top in targets or bottom in targets or right in targets or left in targets:
+                    continue
+                if top == Tile.WALL:
+                    sum += 1
+                if bottom == Tile.WALL:
+                    sum += 1
+                if right == Tile.WALL:
+                    sum += 1
+                if left == Tile.WALL:
+                    sum += 1
+            distances = [manhattan(box, target) for target in targets]
+            sum += min(distances) * 2
+        return sum
     return f

@@ -21,7 +21,7 @@ class Method(ABC):
         pass
 
     @abstractmethod
-    def check_if_explored(self, explored, state: State) -> bool:
+    def return_frontier(self) -> []:
         pass
 
 
@@ -38,8 +38,8 @@ class MethodDFS(Method):
     def is_empty(self) -> bool:
         return len(self.frontier) == 0
 
-    def check_if_explored(self, explored, state: State) -> bool:
-        return state in explored
+    def return_frontier(self) -> []:
+        return self.frontier
 
 
 class MethodBFS(Method):
@@ -55,8 +55,8 @@ class MethodBFS(Method):
     def is_empty(self) -> bool:
         return len(self.frontier) == 0
 
-    def check_if_explored(self, explored, state: State) -> bool:
-        return state in explored
+    def return_frontier(self) -> []:
+        return self.frontier
 
 
 class MethodHeuristic(Method):
@@ -74,8 +74,9 @@ class MethodHeuristic(Method):
     def is_empty(self) -> bool:
         return len(self.frontier) == 0
 
-    def check_if_explored(self, explored, state: State) -> bool:
-        return state in explored
+    def return_frontier(self) -> []:
+        second_values = [tup[1] for tup in self.frontier]
+        return second_values
 
 
 class MethodAStar(Method):
@@ -93,5 +94,6 @@ class MethodAStar(Method):
     def is_empty(self) -> bool:
         return len(self.frontier) == 0
 
-    def check_if_explored(self, explored, state: State) -> bool:
-        return False
+    def return_frontier(self) -> []:
+        second_values = [tup[1] for tup in self.frontier]
+        return second_values
