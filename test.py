@@ -8,6 +8,7 @@ import time
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+import copy
 
 
 tests = [
@@ -309,7 +310,7 @@ for method in heuristic_methods:
     durations = []
     for i in range(1, iterations):
         start = time.time()
-        solution, explored, frontier = search(method, board, targets)
+        solution, explored, frontier = search(copy.deepcopy(method), board, targets)
         # solution, explored, frontier = a_star_search(method_a_star, board, targets)
         end = time.time()
         durations.append(end - start)
