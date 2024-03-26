@@ -7,11 +7,11 @@ import numpy as np
 import time
 import os
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 tests = [
     'test/test_1',
-    'test/test_3',
     'test/test_4',
     'test/test_5',
     'test/test_6'
@@ -135,10 +135,14 @@ def test_informed():
 dataframes = test_informed()
 method_names = ['Greedy', 'A star']
 
-tiempos_bfs = [dataframes[test].at[method_names[0], 'mean_time'] for test in tests]
-errores_bfs = [dataframes[test].at[method_names[0], 'time_error'] for test in tests]
-tiempos_dfs = [dataframes[test].at[method_names[1], 'mean_time'] for test in tests]
-errores_dfs = [dataframes[test].at[method_names[1], 'time_error'] for test in tests]
+tiempos_bfs = [dataframes[test].at[method_names[0], 'mean_time']
+               for test in tests]
+errores_bfs = [dataframes[test].at[method_names[0], 'time_error']
+               for test in tests]
+tiempos_dfs = [dataframes[test].at[method_names[1], 'mean_time']
+               for test in tests]
+errores_dfs = [dataframes[test].at[method_names[1], 'time_error']
+               for test in tests]
 
 plt.rcParams['figure.dpi'] = 300
 
@@ -149,15 +153,15 @@ ancho_barra = 0.35
 # Crear gráfico de barras
 fig, ax = plt.subplots()
 barra_bfs = ax.bar(x, tiempos_bfs, ancho_barra,
-                   yerr=errores_bfs, capsize=5, label='Greedy', color='blue')
+                   yerr=errores_bfs, capsize=5, label=method_names[0], color='blue')
 barra_dfs = ax.bar([i + ancho_barra for i in x], tiempos_dfs, ancho_barra,
-                   yerr=errores_dfs, capsize=5, label='A Star', color='orange')
+                   yerr=errores_dfs, capsize=5, label=method_names[1], color='orange')
 
 # Etiquetas y título
 ax.set_xlabel('Pruebas')
 ax.set_ylabel('Tiempo Medio de Ejecución')
 ax.set_title(
-    'Comparación de Tiempo Medio de Ejecución entre Greedy y A Star por Prueba')
+    'Comparación de Tiempo Medio de Ejecución entre ' + method_names[0] + ' y ' + method_names[1] + ' por Prueba')
 ax.set_xticks([i + ancho_barra / 2 for i in x])
 ax.set_xticklabels(tests)
 ax.legend()
@@ -166,3 +170,162 @@ ax.legend()
 plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
+
+
+# Sample data
+categories = tests
+
+values_group1 = [dataframes[test].at[method_names[0], 'cost']
+                 for test in tests]
+values_group2 = [dataframes[test].at[method_names[1], 'cost']
+                 for test in tests]
+
+# Set the width of the bars
+bar_width = 0.35
+
+# Set the positions of the bars on the x-axis
+bar_positions_group1 = np.arange(len(categories))
+bar_positions_group2 = [x + bar_width for x in bar_positions_group1]
+
+# Create bar plot
+plt.bar(bar_positions_group1, values_group1,
+        color='blue', width=bar_width, label=method_names[0])
+plt.bar(bar_positions_group2, values_group2,
+        color='orange', width=bar_width, label=method_names[1])
+
+# Add labels and title
+plt.xlabel('Test')
+plt.ylabel('Cost')
+plt.title('Bar graph comparing ' +
+          method_names[0] + ' and ' + method_names[1] + ' costs')
+
+# Add x-axis tick labels
+plt.xticks([r + bar_width/2 for r in range(len(categories))], categories)
+
+# Add legend
+plt.legend()
+
+# Show plot
+plt.show()
+
+values_group1 = [dataframes[test].at[method_names[0], 'expanded']
+                 for test in tests]
+values_group2 = [dataframes[test].at[method_names[1], 'expanded']
+                 for test in tests]
+
+# Set the width of the bars
+bar_width = 0.35
+
+# Set the positions of the bars on the x-axis
+bar_positions_group1 = np.arange(len(categories))
+bar_positions_group2 = [x + bar_width for x in bar_positions_group1]
+
+# Create bar plot
+plt.bar(bar_positions_group1, values_group1,
+        color='blue', width=bar_width, label=method_names[0])
+plt.bar(bar_positions_group2, values_group2,
+        color='orange', width=bar_width, label=method_names[1])
+
+# Add labels and title
+plt.xlabel('Test')
+plt.ylabel('Number of Expanded Nodes')
+plt.title('Bar graph comparing ' +
+          method_names[0] + ' and ' + method_names[1] + ' expanded nodes')
+
+# Add x-axis tick labels
+plt.xticks([r + bar_width/2 for r in range(len(categories))], categories)
+
+# Add legend
+plt.legend()
+
+plt.show()
+
+values_group1 = [dataframes[test].at[method_names[0], 'frontier']
+                 for test in tests]
+values_group2 = [dataframes[test].at[method_names[1], 'frontier']
+                 for test in tests]
+
+# Set the width of the bars
+bar_width = 0.35
+
+# Set the positions of the bars on the x-axis
+bar_positions_group1 = np.arange(len(categories))
+bar_positions_group2 = [x + bar_width for x in bar_positions_group1]
+
+# Create bar plot
+plt.bar(bar_positions_group1, values_group1,
+        color='blue', width=bar_width, label=method_names[0])
+plt.bar(bar_positions_group2, values_group2,
+        color='orange', width=bar_width, label=method_names[1])
+
+# Add labels and title
+plt.xlabel('Test')
+plt.ylabel('Number of Expanded Nodes')
+plt.title('Bar graph comparing ' +
+          method_names[0] + ' and ' + method_names[1] + ' frontier')
+
+# Add x-axis tick labels
+plt.xticks([r + bar_width/2 for r in range(len(categories))], categories)
+
+# Add legend
+plt.legend()
+
+# Show plot
+plt.show()
+
+
+# Show plot
+plt.show()
+
+file_name = 'test/test_3'  # Replace 'your_file.txt' with the path to your file
+matrix = read_file_to_matrix(file_name)
+[board, targets, state] = game_from_matrix(matrix)
+print_game(board, state)
+
+method_heuristic_1 = MethodHeuristic(
+    state, fast_anti_livelock(min_manhattan_modified(targets), board))
+method_heuristic_2 = MethodHeuristic(
+    state, fast_anti_livelock(anti_wall(board, targets, state), board))
+
+method_heuristic_3 = MethodHeuristic(
+    state, min_manhattan_modified(targets))
+method_heuristic_4 = MethodHeuristic(
+    state, anti_wall(board, targets, state))
+
+heuristic_methods = [method_heuristic_1, method_heuristic_2,
+                     method_heuristic_3, method_heuristic_4]
+
+# method_a_star_1 = MethodAStar(state, fast_anti_livelock(
+#     min_manhattan_modified(targets), board))
+# method_a_star_2 = MethodAStar(state, fast_anti_livelock(
+#     anti_wall(board, targets, state), board))
+
+# a_star_methods = [method_a_star_1, method_a_star_2]
+dataframe = pd.DataFrame(
+            0.0, index=heuristic_methods, columns=columns)
+
+for method in heuristic_methods:
+    iterations = 10
+    durations = []
+    for i in range(1, iterations):
+        start = time.time()
+        solution, explored, frontier = search(method, board, targets)
+        # solution, explored, frontier = a_star_search(method_a_star, board, targets)
+        end = time.time()
+        durations.append(end - start)
+        dataframe.at[method, 'cost'] = solution.cost
+        dataframe.at[method, 'expanded'] = len(explored)
+        dataframe.at[method, 'frontier'] = len(frontier)
+    dataframe.at[method, 'mean_time'] = np.mean(durations)
+    dataframe.at[method, 'time_error'] = np.std(durations) / iterations**0.5
+
+
+print(dataframe)
+
+# for method in a_star_methods:
+#     start = time.time()
+#     solution, explored, frontier = a_star_search(method, board, targets)
+#     print(solution)
+#     print(len(explored))
+#     print(len(frontier))
+#     end = time.time()

@@ -7,24 +7,26 @@ import os
 
 if __name__ == "__main__":
     # Example usage:
-    file_name = 'test/test_6'  # Replace 'your_file.txt' with the path to your file
+    file_name = 'test/test_3'  # Replace 'your_file.txt' with the path to your file
     matrix = read_file_to_matrix(file_name)
     [board, targets, state] = game_from_matrix(matrix)
     print_game(board, state)
 
     method_heuristic = MethodHeuristic(
-        state, fast_anti_livelock(min_manhattan_modified(targets), board))
+        state, fast_anti_livelock(walkable_distance(board, targets, state), board))
+    # method_heuristic = MethodHeuristic(
+    #     state, fast_anti_livelock(anti_wall(board, targets, state), board))
     # method_heuristic = MethodHeuristic(
     #     state, min_manhattan_modified(targets))
 
     method_a_star = MethodAStar(state, fast_anti_livelock(
-        walkable_distance(board, targets, state), board))
+        anti_wall(board, targets, state), board))
     bfs = MethodBFS(state)
     dfs = MethodDFS(state)
 
     start = time.time()
-    solution, explored, frontier = search(bfs, board, targets)
-    # solution, explored, frontier = a_star_search(method_a_star, board, targets)
+    # solution, explored, frontier = search(method_heuristic, board, targets)
+    solution, explored, frontier = a_star_search(method_a_star, board, targets)
     end = time.time()
 
     if solution is None:

@@ -19,17 +19,17 @@ def successors(board: Board, targets: set[Position], state: State) -> list[State
 
 def search(method: Method, board: Board, targets: set[Position]) -> tuple[Optional[State], Set, []]:
     explored = set()
-    last = time.time()
+    # last = time.time()
 
     while not method.is_empty():
         state = method.get()
 
         curr = time.time()
-        #if curr - last > 0.1:
-        #    clear()
-        #    print("Searching solution...")
-        #    print_game(board, state)
-        #    last = curr
+        # if curr - last > 0.1:
+        #     clear()
+        #     print("Searching solution...")
+        #     print_game(board, state)
+        #     last = curr
 
         if state.is_goal(targets):
             return state, explored, method.return_frontier()
